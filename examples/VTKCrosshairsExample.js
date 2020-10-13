@@ -11,11 +11,11 @@ import { api as dicomwebClientApi } from 'dicomweb-client';
 import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
 import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
 
-const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
+const url = 'http://demo-dcm.rimagcloud.com/dcm/a/dcm4chee-arc/aets/DCM4CHEE/rs';
 const studyInstanceUID =
-  '1.3.6.1.4.1.14519.5.2.1.2744.7002.373729467545468642229382466905';
+  '1.2.86.76547135.7.435304.20191214080201';
 const ctSeriesInstanceUID =
-  '1.3.6.1.4.1.14519.5.2.1.2744.7002.182837959725425690842769990419';
+  '1.2.392.200036.9116.2.6.1.16.1613472537.1576289805.762732';
 const searchInstanceOptions = {
   studyInstanceUID,
 };
