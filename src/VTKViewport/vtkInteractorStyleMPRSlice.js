@@ -74,7 +74,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
     sliceCenter: [],
   };
 
-  function updateScrollManipulator() {
+  publicAPI.updateScrollManipulator = () => {
     const range = publicAPI.getSliceRange();
     model.scrollManipulator.removeScrollListener();
     // The Scroll listener has min, max, step, and getValue setValue as params.
@@ -86,7 +86,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
       publicAPI.getSlice,
       publicAPI.scrollToSlice
     );
-  }
+  };
 
   function setManipulators() {
     publicAPI.removeAllMouseManipulators();
@@ -94,7 +94,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
     publicAPI.addMouseManipulator(model.panManipulator);
     publicAPI.addMouseManipulator(model.zoomManipulator);
     publicAPI.addMouseManipulator(model.scrollManipulator);
-    updateScrollManipulator();
+    publicAPI.updateScrollManipulator();
   }
 
   function isCameraViewInitialized(camera) {
@@ -219,7 +219,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
       const camera = renderer.getActiveCamera();
 
       cameraSub = camera.onModified(() => {
-        updateScrollManipulator();
+        publicAPI.updateScrollManipulator();
         publicAPI.modified();
       });
 
@@ -238,7 +238,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
   // TODO -> When we want a modular framework we'll have to rethink all this.
   // TODO -> We need to think of a more generic way to do this for all widget types eventually.
   // TODO -> We certainly need to be able to register widget types on instantiation.
-  function handleButtonPress() {
+  function handleButtonPress(callData) {
     const { apis, apiIndex } = model;
 
     if (apis && apis[apiIndex] && apis[apiIndex].type === 'VIEW2D') {
@@ -250,9 +250,18 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
         api.svgWidgets.crosshairsWidget.updateCrosshairForApi(api);
       }
       if (api.svgWidgets.rotatableCrosshairsWidget) {
-        api.svgWidgets.rotatableCrosshairsWidget.updateCrosshairForApi(api);
+        updateRotatableCrosshairs(callData);
       }
     }
+  }
+
+  function updateRotatableCrosshairs() {
+    const { apis, apiIndex } = model;
+    const thisApi = apis[apiIndex];
+    const { rotatableCrosshairsWidget } = thisApi.svgWidgets;
+    const worldPos = thisApi.get('cachedCrosshairWorldPosition');
+
+    rotatableCrosshairsWidget.moveCrosshairs(worldPos, apis, apiIndex);
   }
 
   publicAPI.handleMiddleButtonPress = macro.chain(
@@ -280,12 +289,12 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
         api.svgWidgets.crosshairsWidget.updateCrosshairForApi(api);
       }
       if (api.svgWidgets.rotatableCrosshairsWidget) {
-        api.svgWidgets.rotatableCrosshairsWidget.updateCrosshairForApi(api);
+        updateRotatableCrosshairs(callData);
       }
     }
   };
 
-  function handleButtonRelease(superButtonRelease) {
+  function handleButtonRelease(superButtonRelease, callData) {
     if (model.state === States.IS_PAN) {
       publicAPI.endPan();
       const { apis, apiIndex } = model;
@@ -295,7 +304,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
         api.svgWidgets.crosshairsWidget.updateCrosshairForApi(api);
       }
       if (api.svgWidgets.rotatableCrosshairsWidget) {
-        api.svgWidgets.rotatableCrosshairsWidget.updateCrosshairForApi(api);
+        updateRotatableCrosshairs(callData);
       }
     }
 
@@ -304,13 +313,13 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
 
   publicAPI.superHandleMiddleButtonRelease =
     publicAPI.handleMiddleButtonRelease;
-  publicAPI.handleMiddleButtonRelease = () => {
-    handleButtonRelease(publicAPI.superHandleMiddleButtonRelease);
+  publicAPI.handleMiddleButtonRelease = callData => {
+    handleButtonRelease(publicAPI.superHandleMiddleButtonRelease, callData);
   };
 
   publicAPI.superHandleRightButtonRelease = publicAPI.handleRightButtonRelease;
-  publicAPI.handleRightButtonRelease = () => {
-    handleButtonRelease(publicAPI.superHandleRightButtonRelease);
+  publicAPI.handleRightButtonRelease = callData => {
+    handleButtonRelease(publicAPI.superHandleRightButtonRelease, callData);
   };
 
   publicAPI.setVolumeActor = actor => {
@@ -328,7 +337,7 @@ function vtkInteractorStyleMPRSlice(publicAPI, model) {
         setViewUpInternal(viewportData.getCurrentViewUp());
       }
 
-      updateScrollManipulator();
+      publicAPI.updateScrollManipulator();
       // NOTE: Disabling this because it makes it more difficult to switch
       // interactor styles. Need to find a better way to do this!
       //publicAPI.setSliceNormal(...publicAPI.getSliceNormal());
