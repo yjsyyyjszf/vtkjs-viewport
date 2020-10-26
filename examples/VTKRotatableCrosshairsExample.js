@@ -121,7 +121,7 @@ class VTKRotatableCrosshairsExample extends Component {
 
       const istyle = vtkInteractorStyleRotatableMPRCrosshairs.newInstance();
 
-      // // add istyle
+      // add istyle
       api.setInteractorStyle({
         istyle,
         configuration: {
@@ -129,8 +129,6 @@ class VTKRotatableCrosshairsExample extends Component {
           apiIndex: viewportIndex,
         },
       });
-
-      //api.setInteractorStyle({ istyle });
 
       // set blend mode to MIP.
       const mapper = api.volumes[0].getMapper();
