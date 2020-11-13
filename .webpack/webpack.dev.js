@@ -111,5 +111,11 @@ module.exports = {
     open: true,
     port: 3001,
     historyApiFallback: true,
+    proxy: {
+      '/dcm': {
+        target: 'https://demo-dcm.rimagcloud.com',
+        secure: false
+      }
+    }
   },
 };

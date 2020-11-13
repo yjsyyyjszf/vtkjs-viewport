@@ -13,7 +13,7 @@ import presets from './presets.js';
 
 window.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
-const url = 'http://demo-dcm.rimagcloud.com/dcm/a/dcm4chee-arc/aets/DCM4CHEE/rs';
+const url = '/dcm/a/dcm4chee-arc/aets/DCM4CHEE/rs';
 const studyInstanceUID =
   '1.2.86.76547135.7.435304.20191214080201';
 const ctSeriesInstanceUID =
